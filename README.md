@@ -248,7 +248,100 @@
         ```
 
 ## 19일차 : 2월 27일
-- SQL 기초> 데이터 조작어-  삽입(INSERT) , 삭제(DELETE) , 수정(UPDATE)
+- Visual Studio Code에서 MySQL 연동
+    - 확장 > MySQL 검색
+        1. Weijan Chen 개인개발자가 만든 Database Client (강력 추천-모든 데이터베이스 서버타입 다 가능)
+            - 왼쪽 툴바에 database, nosql 아이콘 생성됨
+            - database 아이콘 - > create connection -> connect and save
+            <img src='./images/database_connection.png' width=600>
+            <img src='./images/database_use.png' width=600>
+        2. Weijan Chen 개인개발자가 만든 MySQL 확장 
+        3. Oracle에서 개발한 MySQL Shell for VS Code 
+            - 왼쪽 툴바에 돌고래 아이콘 생성됨
+            - MySQL Shell에서 위자드 Next -> 인증서 설치 -> VS Code 재시작 - > workbench 첫화면과 동일한 화면 나타남
+            - new connection
+             <img src='./images/mysql_shell_connection.png' width=600>
+
+- SQL 기초
+    - 기본 데이터형
+        - 데이터베이스에는 엄청 많은 데이터형이 존재(데이터 사이즈 저장용량을 절약하기 위해서)
+        - 주요 데이터형
+            - SmallInt(2byte) - 65535가지 수(음수포함)(-32768~32767)
+            - Int(byte) -42억 정수(음수)
+            - BigInt(8byte) 
+            - Float(4byte) - 소수점아래 7자리까지 저장
+            - Decimal(5~17byte) - Float보다 더 큰 수 저장
+            - `Char(n) - n은 가변(1~255). 고정길이 문자열`
+                - `주의점! 글자 입력시, Char(10)에 Hello 글자를 입력하면 'Hello     '`
+            - ` Varchar(n) - n(1~65535) ,가변길이 문자열`
+                - `주의점! 글자 입력시, Varchar(10)에 Hello 글자를 입력하면 'Hello'`
+            - Longtext(최대4GB) - 뉴스나 영화스크립트 저장
+            - LongBlob(최대4GB) - mp3, mp4음악, 영화데이터 자체 저장
+            - Date(3) - 2025-02-27 까지 저장
+            - DateTime(8) - 2025-02-27 10:46:34까지 저장
+            - JSON(8) - json 타입
+
 - SQL 기초>데이터 정의어 - CREATE, ALTER, DROP
+    - 테이블 생성 후 확인 - DATABASE탭 -> REVERSE Engineer
+    <img src='./images/EER_Diagram.png' width=500>
+
+    - DROP
+        - `DROP 은 매우 위험하니 사용 금지!!`
+        - 외래키로 연결되어 있을 경우
+            - `부모테이블 선삭제일 때,  3730:Cannot drop table reference ...`
+            - `자식테이블 선삭제, 부모테이블 후삭제`
+            ```sql
+            DROP TABLE NewOrders;
+            DROP TABLE NewBook;
+            ```
+    - CREATE [SQL](./day19/da01_create.sql)
+        - DATABASE
+        - TABLE 
+            - 속성 데이터형 ,기본키 , 제약조건(NOT NULL, UNIQUE, DEFAULT, CHECK) , 외래키
+            ```sql
+            -- 기본키가 1개 또는 2개이상일 경우,
+            CREATE TABLE NewBook (
+                bookId    INTEGER ,
+                bookName  VARCHAR(255) NOT NULL,
+                publisher VARCHAR(255) UNIQUE,
+                price     INTEGER DEFAULT 10000 CHECK (price >=1000),
+                PRIMARY KEY (bookId)
+            );
+            -- 기본키가 하나면 컬럼 하나에 작성 가능. 
+            -- 기본키가 2개이상일 경우, 컬럼에 PRIMARY KEY를 두군데 이상 작성 불가
+            CREATE TABLE NewCustomer(
+            custid  INTEGER PRIMARY KEY ,
+            name 	VARCHAR(100) NOT NULL,
+            address VARCHAR(255) NOT NULL,
+            phone   VARCHAR(30) NOT NULL
+            );
+            ```
+            ```sql
+            CREATE TABLE NewOrders(
+            orderid INTEGER ,
+            custid  INTEGER NOT NULL,
+            bookid  INTEGER NOT NULL, 
+            saleprice INTEGER, 
+            orderdate DATE,
+            PRIMARY KEY (orderid),
+            FOREIGN KEY (custid) REFERENCES NewCustomer(custid) ON DELETE CASCADE,
+            FOREIGN KEY (bookid) REFERENCES NewBook (bookId) ON DELETE CASCADE
+            );
+            ```
+    - ALTER [SQL](./day19/da02_drop_alter.sql)
+        - ADD, MODIFY, DROP
+        ```sql
+        ALTER TABLE NewBook ADD isbn VARCHAR(13);
+
+        ALTER TABLE NewBook MODIFY isbn INTEGER;
+
+        ALTER TABLE NewBook DROP COLUMN isbn;
+
+        -- NewBook 테이블에 publisher값을 null로 가진 행이 있을 경우, 1138:invalid use of null value
+        ALTER TABLE NewBook MODIFY publisher VARCHAR(255) NOT NULL;
+        ```
+
+- SQL 기초> 데이터 조작어-  삽입(INSERT) , 삭제(DELETE) , 수정(UPDATE)
+
 
 - SQL 고급
