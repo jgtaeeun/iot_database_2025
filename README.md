@@ -145,7 +145,7 @@
         - 오름차순 : 숫자, 알파벳 대문자, 알파벳 소문자, 한글(ㄱ-ㅎ)    
 
     - 집계함수  [SQL](./day18/da04_group_by.sql)
-        - AS : 별칭
+        - AS : 별칭 ,` 공백이 포함될 경우 작은따옴표로 묶기 (예) ' 평균 주문금액' (O) 평균 주문금액(X)`
         - SUM(속성이름) AS 합계
         - COUNT (속성이름| *)
             - ` NULL 값을 제외한 해당 속성의 투플 개수`
@@ -342,6 +342,77 @@
         ```
 
 - SQL 기초> 데이터 조작어-  삽입(INSERT) , 삭제(DELETE) , 수정(UPDATE)
+    - AUTO_INCREMENT 
+        - INSERT 시 코드에 기입하지 않음
+        - 삭제한 번호를 재사용할 수 없다. 
 
+    - INSERT [SQL](./day19/da02_drop_alter.sql)
+        - 기본형, 생략형, `다중데이터 입력, 테이블 입력`
+    ```sql
+    INSERT INTO 테이블명(속성1, 속성2 ..) VALUES (값1, 값2 ...);
 
+    -- 생략형
+     INSERT INTO 테이블명 VALUES (값1, 값2 ...);
+
+      -- 다중데이터 입력
+     INSERT INTO 테이블명(속성1, 속성2 ..)
+      VALUES (값1, 값2 ...),
+             (값1, 값2 ...);
+
+    -- 한 테이블에 있는 많은 데이터를 다른 테이블로 복사하는데 가장 효과적인 방법
+    INSERT INTO Book(bookid, bookname, publisher, price)  
+    SELECT bookid, bookname, publisher, price FROM Imported_Book;
+    ```
+
+    - UPDATE [SQL](./day19/da04_update_delete.sql)
+        - 우측 톱니바퀴 아이콘 (Show Preference Dialog) - SQL Editor - 제일 아래 Safe Updates (rejects UPDATEs and DELETEs with no restrictions) 체크
+            - 1175  You are using safe update mode ... : where절 없이 update 시, 모든 행이 다 적용됨을 경고       
+    ```sql
+    UPDATE 테이블명 SET 속성 = 값 , 속성 = 값  WHERE 조건;
+    ```
+    - DELETE 
+        - 우측 톱니바퀴 아이콘 (Show Preference Dialog) - SQL Editor - 제일 아래 Safe Updates (rejects UPDATEs and DELETEs with no restrictions) 체크
+            - 1175  You are using safe update mode ... : where절 없이 DELETE 시, 모든 행이 다 적용됨을 경고   
+     ```sql
+    DELETE FROM 테이블명 WHERE 조건 ;
+    ```    
 - SQL 고급
+    - 내장함수
+        - 숫자함수 
+        ```sql
+        SELECT ABS(-78), ABS(+78);
+        SELECT ROUND(4.875);	-- 5
+        SELECT ROUND(4.875,1); -- 4.9
+        ```
+        - 문자함수 
+            - `replace(문자열, 문자, 문자)는 화면 출력용, 데이터베이스에 값을 변경하려면 UPDATE문 써야함.`
+            - `char_length() 문자수 , length() 바이트수` ,  -- utf8에서 한글 한글자의 바이트 수는 3bytes , 공백 바이트 수는 1byte
+            - `SUBSTR(문자열, 처음시작 인덱스, 개수)` **DB은 인덱스 1부터**
+        ```sql
+        -- TRIM
+        SELECT CONCAT('--' ,TRIM('     HELLO     '),'--');  -- --HELLO--
+        SELECT CONCAT('--' ,LTRIM('     HELLO     '),'--');  -- --HELLO     --
+        SELECT CONCAT('--' ,RTRIM('     HELLO     '),'--');  -- --     HELLO--
+
+        SELECT TRIM('=' FROM ' ===HELLO==='); -- ===HELLO
+        SELECT TRIM('=' FROM '===HELLO==='); -- HELLO
+        ```
+        - 날짜, 시간 함수
+            - SYSDATE()  -- Docker 서버시간을 따라서 그리니치천문대 시간 기준임 , 한국시간은 +9 해야함
+            - ADDDATE(SYSDATE(), INTERVAL 9 HOUR) AS '한국 시간'
+            - DATEDIFF(DAY1, DAY2) DAY1-DAY2가 결과로 나옴   
+            - 포맷 
+                - %Y(4자리 연도) %y(4자리 연도 중 마지막 2자기) %M(월이름 영어 January) %m(01~12) %b(월 약어 Jan) %d(00~31) 
+                - %H(00~23시간) %h(01~12시간) %i(0~59) %s(0~59) %p(AM/PM)
+                - `1000단위마다 , 넣기`
+                ```sql
+                 SELECT bookid, bookname, FORMAT(price, 0) AS price
+                 FROM Mybook;
+                ```
+    - NULL 값 처리
+        - '0', ''. ' '(공백) 등과 다른 특별한 값
+        - IS NULL, IS NOT NULL
+        - 집계함수 사용할 때 주의할점 : NULL + 숫자는 NULL이다. Null이 포함된 행은 집계에서 빠진다.(예 - count(*))
+        <img src='./images/null값 포함된 테이블.png' width=500>
+        <img src='./images/null값숫자연산.png' width=500>
+        <img src='./images/널값집계함수.png' width=500>
