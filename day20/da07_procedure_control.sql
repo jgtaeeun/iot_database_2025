@@ -23,8 +23,10 @@ BEGIN
 			WHERE bookname LIKE CONCAT('%', mybookname , '%');
     ELSE
 		INSERT INTO Book VALUES (mybookid, mybookname, mypublisher, myprice);
-    
     END IF;
+
+    -- 안전한 업데이트 모드로 복원
+    SET SQL_SAFE_UPDATES = 1;
 END;
 
 SELECT * FROM Book;
