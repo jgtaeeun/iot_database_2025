@@ -462,10 +462,13 @@
     GROUP BY o.custid ;
     ```
     <img src='./images/서브쿼리.png' width =300> 서브쿼리자체가 나오기에 별칭하면 보기 수월함
+
     - 중첩질의 : WHERE  부속질의 
-        - IN, NOT IN 
-        - `ALL(모든값과 비교하여 참, MAX), SOME(어떤 하나의 값과 비교하여 참, MIN), ANY`
-        - EXISTS (상관쿼리에서 씀)
+        - 단일값, 다중행
+        - 다중행일 경우,
+            - IN, NOT IN 
+            - `ALL(모든값과 비교하여 참, MAX), SOME(어떤 하나의 값과 비교하여 참, MIN), ANY`
+            - EXISTS (상관쿼리에서 씀)
 
          - `서브쿼리에서 두가지 컬럼을 비교하는 법 (파이썬 튜블과 유사)`
         ```sql
@@ -496,4 +499,105 @@
         ;
         ```
 
+- SQL고급> 뷰 [SQL](./day20/da03_view.sql)
+    - CREATE OR REPLACE(생성, 수정) VIEW , DROP
+      ```sql
+        CREATE  OR REPLACE  VIEW 뷰이름
+        AS SELECT문;
 
+        --  뷰실행
+        SELECT *
+        FROM 뷰이름;
+
+        DROP VIEW 뷰이름;
+        ```
+
+    - INSERT, UPDATE, DELETE도 가능하나 제약이 따름
+        - 뷰의 테이블이 하나여야 함
+        - 조인된 테이블로 뷰를 만들 경우, 안됨
+        - 관계에서 자식테이블의 뷰는 INSERT불가
+
+
+- SQL고급> 인덱스  [SQL](./day20/da04_index.sql)
+    - 실행계획(QUERY 탭의 Explain Current Statement) - 인덱스나 조인 등에서 쿼리 중 어디에서 가장 처리비용이 많이 발생하는지
+    
+    - 클러스터 인덱스
+        - 테이블당 하나
+        - 테이블의 기본키에 대하여 클러스터 인덱스를 생성한다.
+        - 행이 추가되거나 삭제될 때 , 클러스터 인덱스 변경에 시간이 많이 걸린다.
+    <img src='./images/clustered_index.png'>
+
+    - 보조 인덱스(Non-clustered)
+        - 보조 인덱스를 검색하여 기본키 속성을 찾은 다음 클러스터 인덱스로 가서 해당 레코드를 찾는다.
+    <img src='./images/non_clustered.png'>
+   
+    ```sql
+    CREATE INDEX 인덱스명 
+        ON 테이블명(컬럼명 , 컬럼명);
+
+    SHOW INDEX FROM 테이블명;
+
+    -- 인덱스 최적화
+    ANALYZE TABLE 테이블명;
+
+    DROP INDEX 인덱스명 ON 테이블명;
+    ```
+    
+    
+    - 주의사항
+        - WHERE절에 자주 사용하는 컬럼에 인덱스 생성
+        - 조인문에 사용하는 컬럼(PK포함) 인덱스 생성
+        - 테이블당 인덱스 개수는 5개미만 생성할 것(너무 많으면 성능저하)
+        - 자주 변경되는 컬럼에는 인덱스 생성말것(성능저하)
+        - NULL값이 많은 컬럼에 인덱스 생성말것(성능저하)
+
+- 데이터베이스 프로그래밍
+    - 저장프로시저
+        - delimiter 때문에 한줄씩 실행하는 것이 에러날 경우, 드래그해서 번개모양 아이콘 execute하기
+        - 너무 많은 쿼리로 일을 처리해야 할 때, 파이썬 등 프로그램에서 구현하면 매우 복잡함 -> 저장프로시저 하나로 프로그램 구현시 코드가 매우 짧아짐
+        - 개발 솔루션화, 구조화 해서 손쉽게 DB처리를 가능하게 하기 위해서
+        
+        1. 삽입 [SQL](./day20/da06_procedure_insert.sql)
+        ```sql
+        delimiter//
+        CREATE PROCEDURE 프로시저명(
+            IN 변수명 변수자료형 --테이블의 자료형과 일치해야함
+        )
+        BEGIN
+            INSERT INTO 테이블명(속성1) VALUES (변수명);
+        END;
+        //
+        --프로시저 호출
+        CALL 프로시저명 (속성값);
+
+        -- 프로시저 삭제
+        DROP PROCEDURE 프로시저명;
+        ```
+
+
+        2. 제어 [SQL](./day20/da07_procedure_control.sql)
+        ```sql
+        delimiter //
+        CREATE PROCEDURE 프로시저명(
+            mybookname INTEGER,
+            myprice INTEGER
+        )
+        BEGIN
+            --변수선언
+            DECLARE mycount INTEGER;
+
+            SELECT COUNT(*) INTO mycount
+              FROM Book
+             WHERE bookname LIKE CONCAT('%',mybookname,'%');
+
+            IF mycount !=0 THEN
+                SET SQL_SAFE_UPDATES =0;
+                UPDATE Book SET price= myprice WHERE bookname LIKE CONCAT('%',mybookname,'%');
+            ELSE
+                INSERT INTO Book VALUES (mybookname,myprice);
+            END IF;
+        END;
+        
+        -- 실행
+        CALL 프로시저명(값1, 값2);
+        ```        
