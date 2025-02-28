@@ -298,6 +298,7 @@
         - DATABASE
         - TABLE 
             - 속성 데이터형 ,기본키 , 제약조건(NOT NULL, UNIQUE, DEFAULT, CHECK) , 외래키
+            - 기본키를 정한 테이블의 경우, SELECT TABLE 했을 때 마지막행에 NULL이 뜬다. 기본키 없을 경우, 마지막행은 데이터가 들어있는 마지막행이다.
             ```sql
             -- 기본키가 1개 또는 2개이상일 경우,
             CREATE TABLE NewBook (
@@ -416,3 +417,83 @@
         <img src='./images/null값 포함된 테이블.png' width=500>
         <img src='./images/null값숫자연산.png' width=500>
         <img src='./images/널값집계함수.png' width=500>
+
+        - IFNULL(속성, 값) 속성이 널 일때, 값으로 결과반환
+
+## 20일차 : 2월 28일
+- SOL고급
+    - 데이터베이스 인덱스는 1부터 시작
+    - 행번호 출력 (@seq  , LIMIT, OFFSET) [SQL](./day20/da01_row_expression.sql)
+    ```sql
+    
+    SET @seq := 0 ; -- 변수선언: SET으로 시작하고 @를 붙임. 값할당은 := 임
+
+    SELECT (@seq := @seq +1 ) AS '행번호'
+        , custid
+        , name
+        , phone
+    FROM Customer
+    WHERE @seq <2 ;
+ 
+    SET @seq := 0 ; 
+    SELECT (@seq := @seq +1 ) AS '행번호'
+        , custid
+        , name
+        , phone
+    FROM Customer
+    LIMIT 2;
+
+    -- 특정범위 추출 (인덱스 3의 다음 인덱스 행부터 2개를 추출)
+    SELECT
+        custid
+        , name
+        , phone
+    FROM Customer
+    LIMIT 2 OFFSET 3;   --4, 5행
+    ```
+- SOL고급 >서브쿼리 [SQL] (./day20/da02_query.sql)
+   
+    - 스칼라 부속질의 : select 부속질의 /**단일행, 단일열**
+    ```sql
+    SELECT o.custid
+    , (SELECT name FROM Customer WHERE custid = o.custid) -- select 서브쿼리는 스칼라값. 단일행, 단일열이어야 하므로 *이 아닌 name
+    , SUM(o.saleprice)
+    FROM Orders o 
+    GROUP BY o.custid ;
+    ```
+    <img src='./images/서브쿼리.png' width =300> 서브쿼리자체가 나오기에 별칭하면 보기 수월함
+    - 중첩질의 : WHERE  부속질의 
+        - IN, NOT IN 
+        - `ALL(모든값과 비교하여 참, MAX), SOME(어떤 하나의 값과 비교하여 참, MIN), ANY`
+        - EXISTS (상관쿼리에서 씀)
+
+         - `서브쿼리에서 두가지 컬럼을 비교하는 법 (파이썬 튜블과 유사)`
+        ```sql
+        SELECT *
+        FROM Orders
+        WHERE (custid, orderid) IN ( SELECT custid, orderid
+                                    FROM Orders
+                                   WHERE custid =2
+                                );
+        ```
+    - 인라인 뷰 : FROM 부속질의
+        - 가상테이블을 만들고 이름짓고, from에 넣어줌
+        ```sql
+        -- 가상테이블
+        SELECT custid
+                , name
+        FROM Customer c
+        WHERE custid <=2 ;
+        
+        -- 가상테이블을 cs라고 이름짓고, from에 넣어줌
+        SELECT cs.name, SUM(o.saleprice) AS '구매액'
+        FROM ( SELECT custid
+                        , name
+                    FROM Customer 
+                    WHERE custid <=2  ) AS cs , Orders As o
+        WHERE cs.custid = o.custid
+        GROUP BY  o.custid
+        ;
+        ```
+
+
