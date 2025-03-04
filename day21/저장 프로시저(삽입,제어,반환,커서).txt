@@ -1,0 +1,54 @@
+- 저장 프로시저
+1. 삽입
+CREATE PROCEDURE insertPro(
+	IN mybookname VARCHAR(250)
+)
+BEGIN
+	INSERT INTO Book VALUES (mybookname);
+END;
+
+CALL  insertPro('사랑의 온도');
+
+2. 제어
+CREATE PROCEDURE controlPro(
+	IN mybookname VARCHAR(250)
+)
+BEGIN
+	Declare mycount INTEGER ;
+	SELECT COUNT(*) INTO mycount
+	FROM Book
+    	WHERE bookname LIKE CONCAT('%' ,mybookname,'%');
+
+	if mycount !=0 then 
+		SET SQL_SAFE_UPDATES =0;
+		UPDATE Book SET bookname = mybookname + '2' 
+		WHERE bookname LIKE CONCAT('%' ,mybookname,'%');
+ 
+	ELSE 
+		INSERT INTO Book VALUES (mybookname);
+	END IF;
+
+	SET SQL_SAFE_UPDATES =1;
+END;
+
+
+3. 반환
+OUT 파라미터
+
+CREATE PROCEDURE outPro(
+	OUT Val INTEGER
+)
+BEGIN
+	SELECT AVG(price) INTO Val
+	FROM Book
+	WHERE price IS NOT NULL;
+END;
+
+CALL outPro(@myVal);
+SELECT @myVal;
+
+4.커서
+
+5. 트리거
+
+6. 사용자정의 함수

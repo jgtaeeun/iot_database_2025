@@ -601,3 +601,86 @@
         -- 실행
         CALL 프로시저명(값1, 값2);
         ```        
+
+## 21일차 : 3월 4일
+- 데이터베이스 프로그래밍
+    
+
+    - 저장프로시저
+        - delimiter // 
+        - 변수선언 declare
+        - if 조건 then 
+            set 
+        else
+            set
+         end if;
+        - CALL문으로 직접 호출함
+
+        3. 결과를 반환 [SQL](./day21/da01_out_procedure.sql)
+            - 리턴문을 쓸 수 있으면 함수, 아니면 프로시저.
+            - 프로시저에서도 값을 반환하려면 OUT파라미터를 선언.
+        4. 커서 사용 [SQL](./day21/da02_cursor_procedure.sql)
+            ```sql
+            -- 커서생성
+            DECLARE 커서이름  CURSOR FOR
+            
+            -- 커서사용시작
+            OPEN 커서이름
+
+            -- 행데이터 가져옴
+            FETCH 커서이름 INTO 변수명
+
+            --커서종료
+            CLOSE 커서이름
+            ```
+
+    - 트리거 [SQL](./day21/da03_trigger.sql)
+        - BEFORE , AFTER 트리거
+        - 데이버 변경문 
+            - INSERT 의 경우, new.
+            - UPDATE, DELETE의 경우, old.
+        - DML문이 실행될 때, 자동실행됨
+    ```sql
+    -- root계정에서 트리거 작동에 필요한 문장
+    SET GLOBAL log_bin_trust_function_creators = ON;
+
+    delimiter //
+    CREATE TRIGGER AfterInsertBook
+        AFTER INSERT ON Book For EACH ROW	
+
+    BEGIN
+        DECLARE average INTEGER;
+        INSERT INTO Book_log
+        VALUES (new.bookid, new.bookname, new.publisher, new.price);
+    END;
+
+    INSERT INTO Book VALUES (40, '말 잘하는 사람은 말투부터 다르다.' , '지니의서재', 18000);
+    ```
+
+    - 사용자 정의 함수 [SQL](./day21/da04_function.sql)
+        - return 키워드를 사용
+        - SELECT 문에 포함됨
+    ```sql
+        DELIMITER //
+    CREATE FUNCTION fnc_Interest(
+        price INTEGER
+    )	RETURNS INTEGER
+        
+    BEGIN
+        DECLARE myInterest INTEGER;
+        IF price >= 30000 THEN
+            SET myInterest = price *0.1;
+        ELSE SET myInterest =  price *0.05;
+        END IF;
+        RETURN myInterest;
+    END;
+
+
+    -- 실행
+    SELECT custid, orderid, saleprice, fnc_Interest(saleprice) as '이익금'
+    FROM Orders;
+    ```    
+    <img src ='./images/procedure_trigger_function.png'>
+    
+- 데이터베이스 연동 파이썬 프로그래밍 [NoteBook](./day21/da05_파이썬_db연동.ipynb)
+- 데이터베이스 연동 웹 프로그래밍 [NoteBook](./day21/da06_flask.py)
