@@ -36,3 +36,5 @@ def getDetail():
     return render_template('bookview.html', book = book)
 if __name__ == '__main__':
     app.run('localhost')
+
+

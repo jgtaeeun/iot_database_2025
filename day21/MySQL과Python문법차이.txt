@@ -1,0 +1,11 @@
+MySQL                 Python
+--                          # 
+if 조건 then        if 조건 :
+			
+			
+else                 elif :
+
+end if              else : 
+
+==================
+ROUNT()
