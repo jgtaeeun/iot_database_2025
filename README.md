@@ -911,7 +911,54 @@
 
 
 - 실무 실습
-    - A.SQL Practice
+    - A.SQL Practice [SQL](./day23/da05_sql_practice.sql) 
+        ```sql
+        where 필드명 not between A and B
+
+        --첫글자는 대문자, 나머지는 소문자
+        concat(Upper(substring(first_name,1,1)) , lower(substring(first_name,2,char_length(first_name))))
+        
+        -- 요일(%W) , 요일정렬(%w)
+        SELECT CONCAT(first_name, ' ', last_name) as Name , hire_date, date_format(hire_date, '%W') AS 'Day of the week'
+        FROM employees
+        ORDER BY date_format(hire_date, '%w') ; 
+
+        /*
+        %w의 의미:
+        **%w**는 0부터 6까지의 숫자를 반환하며, 숫자는 **일요일(0)**부터 **토요일(6)**까지의 요일을 나타냅니다.
+        0: 일요일
+        1: 월요일
+        2: 화요일
+        3: 수요일
+        4: 목요일
+        5: 금요일
+        6: 토요일
+        */
+
+        -- 세자리 구분 기호
+        concat('$',format(round(sum(salary),0) , 0) )as salary ,   -- 1,000
+        concat('$',format( round(avg(salary),1) , 1) ) as average,  -- 1,000.0
+
+        -- 서브쿼리
+        select grade_level from job_grades
+        where e.salary between lowest_sal and highest_sal 
+        ```
+    - 단일 행 함수의 종류
+        - 문자조작 - UPPER(), LOWER(), REPLACE(), SUBSTRING(), LTRIM(), CONCAT()
+        - 숫자관련 - ROUND(), TRUNCATE(), MOD(), POWER()
+            - TRUNCATE()는 MySQL에서 테이블의 모든 데이터를 삭제하는 명령입니다. TRUNCATE는 DELETE와 비슷하게 작동하지만 몇 가지 중요한 차이점이 있습니다.
+        - 날짜관련 - SYSDATE(), DATE_ADD(, inteval 9 HOUR), DATE_SUB(), FROM_DAYS()
+            - FROM_DAYS(738919) : MySQL의 기준 날짜(0000-01-01)로부터 738919일이 지난 날짜를 계산해 반환합니다.
+        - 변환함수 - CONVERT(), CAST()    
+            - CONVERT(expression, type) -expression은 변환할 값입니다.type은 변환하려는 데이터 타입입니다.      예를 들어, CHAR, DATE, DATETIME 등이 될 수 있습니다. 
+            - CAST(expression AS type)- expression은 변환할 값입니다. type은 변환하려는 데이터 타입입니다. 예를 들어, CHAR, DATE, DATETIME, SIGNED 등이 될 수 있습니다.
+
+ ## 24일차 : 3월 7일
+- 실무연습
     - B. 데이터 모델링
     - C. 데이터베이스 프로젝트
+
 - Python GUI로 DB연동 앱 개발
+
+## 25일차 : 3월 10일
+- 코딩테스트
