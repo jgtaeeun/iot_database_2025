@@ -954,7 +954,28 @@
             - CAST(expression AS type)- expression은 변환할 값입니다. type은 변환하려는 데이터 타입입니다. 예를 들어, CHAR, DATE, DATETIME, SIGNED 등이 될 수 있습니다.
 
  ## 24일차 : 3월 7일
+- Workbench Tip
+    - SQL툴 공통으로 SELECT 실행시 모든 행을 다 표시하지 않음.(성능저하 대비)
+    - workbench는 1000개로 제한
+    - 성능테스트 시 1000개 제한을 풀어줘야 함
+    - `메뉴 Edit-Preferences >SQL Editor > SQL Execution에서 Limit Rows Count 조절 및 limit Rows 체크`
+    <img src='./images/limit_row_control.png' width = 500>
+
 - 실무연습
+    - A. SQL Practice
+        - `서브쿼리 (튜플형태)`
+        ```sql
+        SELECT *
+        FROM employees
+        WHERE (job_id, salary ) IN (
+                                        SELECT job_id, MIN(salary)
+                                        FROM employees
+                                        GROUP BY job_id );
+        ```
+        - 집합 UNION, UNION ALL
+            - mysql에서는 intersect, minus 지원하지 않기에 join으로 연결해서 풀어야 함
+            - 집합 구현시 양쪽 테이블의 컬럼수 및 데이터 타입은 반드시 같아야 한다.
+            - 만일 공통된 컬럼이 없을 경우, NULL 처리를 하고, 필요에 따라 데이터 타입을 변환하여 일치시킨다.
     - B. 데이터 모델링
     - C. 데이터베이스 프로젝트
 

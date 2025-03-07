@@ -15,7 +15,7 @@ WHERE last_name like '%Tucker%');
 사원의 성과 이름, 업무, 급여, 입사일
 */
 
-
+-- 상관 쿼리
 select CONCAT(first_name ,' ', last_name) as Name, job_id, salary  , hire_date
 from employees e1
 WHERE salary = (
@@ -23,6 +23,14 @@ WHERE salary = (
 		from employees e2
         WHERE e1.job_id = e2.job_id
 );
+
+-- 튜플로 해결
+SELECT *
+ FROM employees
+ WHERE (job_id, salary ) IN (
+								SELECT job_id, MIN(salary)
+								FROM employees
+								GROUP BY job_id );
 
 -- 문제2  상관관계 부속질의
 /*소속 부서의 평균 급여보다 많은 급여를 받는 사원
