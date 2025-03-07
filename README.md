@@ -952,7 +952,7 @@
         - 변환함수 - CONVERT(), CAST()    
             - CONVERT(expression, type) -expression은 변환할 값입니다.type은 변환하려는 데이터 타입입니다.      예를 들어, CHAR, DATE, DATETIME 등이 될 수 있습니다. 
             - CAST(expression AS type)- expression은 변환할 값입니다. type은 변환하려는 데이터 타입입니다. 예를 들어, CHAR, DATE, DATETIME, SIGNED 등이 될 수 있습니다.
-
+            -  unsigned (양수만)  , signed (음수포함)
  ## 24일차 : 3월 7일
 - Workbench Tip
     - SQL툴 공통으로 SELECT 실행시 모든 행을 다 표시하지 않음.(성능저하 대비)
@@ -972,10 +972,18 @@
                                         FROM employees
                                         GROUP BY job_id );
         ```
-        - 집합 UNION, UNION ALL
+        - 집합 UNION, UNION ALL [SQL](./day24/da01_union.sql)
             - mysql에서는 intersect, minus 지원하지 않기에 join으로 연결해서 풀어야 함
             - 집합 구현시 양쪽 테이블의 컬럼수 및 데이터 타입은 반드시 같아야 한다.
             - 만일 공통된 컬럼이 없을 경우, NULL 처리를 하고, 필요에 따라 데이터 타입을 변환하여 일치시킨다.
+
+        - 조건문 case 
+            - 월별조회  [SQL](./day24/da02_case.sql)
+            ```sql
+            -- Error Code: 1055. Expression #2 of SELECT list is not in GROUP BY  에러 해결코드
+            SET SESSION sql_mode = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+            ```
+
     - B. 데이터 모델링
     - C. 데이터베이스 프로젝트
 
