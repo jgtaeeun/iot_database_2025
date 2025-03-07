@@ -980,10 +980,42 @@
         - 조건문 case 
             - 월별조회  [SQL](./day24/da02_case.sql)
             ```sql
-            -- Error Code: 1055. Expression #2 of SELECT list is not in GROUP BY  에러 해결코드
-            SET SESSION sql_mode = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-            ```
 
+            SELECT @@sql_mode;
+            -- GROUP BY 때 SELECT * 하면 경고창 뜨기 위한 코드
+            SET SESSION sql_mode = 'ONLY_FULL_GROUP_BY';   
+
+            -- Error Code: 1055. Expression #2 of SELECT list is not in GROUP BY  에러 해결코드
+            SET SESSION sql_mode = 'STRICT_TRANS_TABLES, NO_ZERO_IN_DATE, NO_ZERO_DATE, ERROR_FOR_DIVISION_BY_ZERO, NO_ENGINE_SUBSTITUTION';
+          
+            /*
+            이 SQL 모드 설정을 통해 MySQL 세션에서 쿼리 실행, 데이터 유효성 검사, 에러 처리 방식을 엄격하게 설정하게 됩니다. 이를 통해 다음과 같은 효과를 얻을 수 있습니다:
+
+            ONLY_FULL_GROUP_BY: GROUP BY 절에 대한 규칙을 엄격하게 적용하여 예기치 않은 결과를 방지합니다.
+            STRICT_TRANS_TABLES: 데이터의 무결성을 보장하기 위해 잘못된 값을 삽입할 때 오류를 발생시킵니다.
+            NO_ZERO_IN_DATE, NO_ZERO_DATE: 잘못된 날짜 값(예: '0000-00-00' 또는 '2025-00-01')을 방지합니다.
+            ERROR_FOR_DIVISION_BY_ZERO: 0으로 나누는 연산에서 오류를 발생시켜 부정확한 결과를 방지합니다.
+            NO_ENGINE_SUBSTITUTION: 사용 불가능한 저장 엔진을 대체하지 않도록 설정합니다.
+            이 설정은 일반적으로 프로덕션 환경에서 데이터의 일관성과 정확성을 보장하기 위해 사용됩니다.
+            */
+            ```
+        - 그룹화 ROLLUP, grouping [SQL](./day24/da03_rollup_grouping.sql)
+            ```sql
+             -- 전체를 그룹화한 수행 결과 1/ 부서에 대해서만 그룹화 수행결과 12 /부서와 업무별 그룹화 수행결과 20 =>총 33행
+             group by department_id, job_id WITH ROLLUP;
+
+            -- grouping() 함수를 사용하여 그룹화된 컬럼의 수준을 확인합니다.
+            -- 전체를 그룹화한 수행 결과 1 all-depths  all-jobs
+            -- 부서에 대해서만 그룹화 수행결과 12  all-jobs
+            -- 부서와 업무별 그룹화 수행결과 20 =>총 33행
+            SELECT  department_id, job_id, 
+                    CONCAT('$' , SUM(salary)) as 'Salary Sum' ,
+                    count(employee_id) as 'count emps',
+                    grouping(department_id),
+                    grouping(job_id)
+            FROM employees
+            group by department_id, job_id WITH ROLLUP;
+            ```
     - B. 데이터 모델링
     - C. 데이터베이스 프로젝트
 
