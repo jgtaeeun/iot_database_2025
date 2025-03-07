@@ -1000,6 +1000,7 @@
             */
             ```
         - 그룹화 ROLLUP, grouping [SQL](./day24/da03_rollup_grouping.sql)
+            - `NULL값이 되지 않도록 문자열지정하거나 컬럼명을 지정해야 함`
             ```sql
              -- 전체를 그룹화한 수행 결과 1/ 부서에 대해서만 그룹화 수행결과 12 /부서와 업무별 그룹화 수행결과 20 =>총 33행
              group by department_id, job_id WITH ROLLUP;
@@ -1015,7 +1016,43 @@
                     grouping(job_id)
             FROM employees
             group by department_id, job_id WITH ROLLUP;
+
+            -- NULL값이 되지 않도록 문자열지정하거나 컬럼명을 지정해야 함
+
+            SELECT  department_id, job_id, 
+                    CONCAT('$' , SUM(salary)) as 'Salary Sum' ,
+                    count(employee_id) as 'count emps',
+                    CASE grouping(department_id)
+                    WHEN 1 THEN 'All_DEPT'
+                    ELSE IFNULL(department_id , '부서없음')
+                    END
+                    AS 'DEPT#',
+                    CASE grouping(job_id)
+                    WHEN 1 THEN 'All_JOBS'
+                    ELSE job_id
+                    END
+                    AS 'JOBS',
+            FROM employees
+            group by department_id, job_id WITH ROLLUP;
             ```
+        - 순위 -NTILE, rank() ,dense_rank(),row_number() 
+        ```sql
+        NTILE(4) over (order by 컬럼명 desc) as 'NTILE'
+
+        rank() over(partition by department_id order by salary Desc) as 'Rank'
+        dense_rank() over(partition by department_id order by salary Desc) as 'dense_rank'
+        row_number() over(partition by department_id order by salary Desc) as 'row_number'
+        ```
+        <img src='./images/순위함수.png>
+        - 이전행, 다음행 - LAG(), LEAD()
+        - LAG(expression, offset, default_value) 
+            - expression: 값을 가져올 컬럼.
+            - offset: 몇 번째 이전 행을 가져올지 지정 (기본값은 1).
+            - default_value: 이전 행이 존재하지 않으면 반환할 기본값 (기본값은 NULL).
+        ```sql
+        LAG(salary, 1, 0) OVER (order by salary desc) AS'previous_salary', 
+        LEAD(salary, 1, 0)OVER (order by salary desc)  AS 'next_salary'
+        ```
     - B. 데이터 모델링
     - C. 데이터베이스 프로젝트
 
