@@ -975,10 +975,11 @@
         - 집합 UNION, UNION ALL [SQL](./day24/da01_union.sql)
             - mysql에서는 intersect, minus 지원하지 않기에 join으로 연결해서 풀어야 함
             - 집합 구현시 양쪽 테이블의 컬럼수 및 데이터 타입은 반드시 같아야 한다.
-            - 만일 공통된 컬럼이 없을 경우, NULL 처리를 하고, 필요에 따라 데이터 타입을 변환하여 일치시킨다.
+            - `만일 공통된 컬럼이 없을 경우, NULL 처리를 하고, 필요에 따라 데이터 타입을 변환하여 일치시킨다.`
 
         - 조건문 case 
             - 월별조회  [SQL](./day24/da02_case.sql)
+            - sql_mode
             ```sql
 
             SELECT @@sql_mode;
@@ -1000,7 +1001,7 @@
             */
             ```
         - 그룹화 ROLLUP, grouping [SQL](./day24/da03_rollup_grouping.sql)
-            - `NULL값이 되지 않도록 문자열지정하거나 컬럼명을 지정해야 함`
+            - **NULL값이 되지 않도록 문자열지정하거나 컬럼명을 지정해야 함**
             ```sql
              -- 전체를 그룹화한 수행 결과 1/ 부서에 대해서만 그룹화 수행결과 12 /부서와 업무별 그룹화 수행결과 20 =>총 33행
              group by department_id, job_id WITH ROLLUP;
@@ -1035,7 +1036,7 @@
             FROM employees
             group by department_id, job_id WITH ROLLUP;
             ```
-        - 순위 -NTILE, rank() ,dense_rank(),row_number() 
+        - 순위 -NTILE, rank() ,dense_rank(),row_number()  [SQL](./day24/da04_순위,이전행,다음행.sql)
         ```sql
         NTILE(4) over (order by 컬럼명 desc) as 'NTILE'
 
@@ -1043,20 +1044,31 @@
         dense_rank() over(partition by department_id order by salary Desc) as 'dense_rank'
         row_number() over(partition by department_id order by salary Desc) as 'row_number'
         ```
-        <img src='./images/순위함수.png>
-        - 이전행, 다음행 - LAG(), LEAD()
-        - LAG(expression, offset, default_value) 
-            - expression: 값을 가져올 컬럼.
-            - offset: 몇 번째 이전 행을 가져올지 지정 (기본값은 1).
-            - default_value: 이전 행이 존재하지 않으면 반환할 기본값 (기본값은 NULL).
+        <img src='./images/순위함수.png' width = 300>
+
+        - 이전행, 다음행 - LAG(), LEAD()  [SQL](./day24/da04_순위,이전행,다음행.sql)
+            - LAG(expression, offset, default_value) 
+                - expression: 값을 가져올 컬럼.
+                - offset: 몇 번째 이전 행을 가져올지 지정 (기본값은 1).
+                - default_value: 이전 행이 존재하지 않으면 반환할 기본값 (기본값은 NULL).
         ```sql
         LAG(salary, 1, 0) OVER (order by salary desc) AS'previous_salary', 
         LEAD(salary, 1, 0)OVER (order by salary desc)  AS 'next_salary'
         ```
-    - B. 데이터 모델링
-    - C. 데이터베이스 프로젝트
-
-- Python GUI로 DB연동 앱 개발
+    - B. 데이터 모델링 & C. 데이터베이스 프로젝트
+        - 병원업무관리 ERD
+            - 요구사항으로 개체와 관계를 정립. 개체에 속하는 속성들, 식별자 결정
+            - 테이블 명세서 작성(워드, 엑셀)
+            - Erwin|Workbench 모델링에서 ERD 작성 [Erwin](./day24/병원업무관리_ERD.erwin)
+            <img src='./images/erwin_병원업무관리_logical.png' width = 300>
+             <img src='./images/erwin_병원업무관리_physical.png' width = 300>
+            - Mysql에서 스키마,테이블 생성 및 ER다이어그램 확인
+                - 생성스크립트 [ddl](./day24/da05_병원업무관리schema.ddl)
+                <img src='./images/MYSQL_ER.png' width = 300>
+            - Mysql에서 데이터 삽입 및 쿼리실행하여 select문으로 데이터 조회 [SQL](./day24/da07_B데이터%20모델링,C프로젝트.sql)
 
 ## 25일차 : 3월 10일
+         
+- Python GUI로 DB연동 앱 개발
+
 - 코딩테스트

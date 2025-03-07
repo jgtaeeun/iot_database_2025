@@ -1,0 +1,23 @@
+1. SQL PRACTICE
+
+서브쿼리-튜플
+집합 - UNION , UNION ALL  *mysql은 intersect, minus 지원 안 된다.
+CASE - 월별조회 
+SQL MODE 
+그룹화-GROUP BY 컬럼명 WITH ROLLUP  /GROUPING(컬럼명)
+순위-NTILE() , RANK(), DENSE_RANK(), ROW_NUMBER()
+OVER (PARTITION BY 컬럼명 ORDER BY 컬럼명 DESC)
+
+NTILE(N) -N개의  그룹으로 나누기
+RANK()-동등순위가 있을 경우, 동등순위 갯수만큼 더해진 숫자가 다음 번호
+DENSE_RANK()-동등순위가 있을경우, 같은 번호를 부여하고 다음 번호는 그대로 1 증가
+ROW_NUMBER()-동등순위와 상관없이 무조건 1씩 증가
+
+다음행, 이전행 - LEAD(컬럼, 몇번째다음행, 기본값), LAG(컬럼, 몇번째이전행, 기본값)
+LEAD( )또는 LAG()  + OVER (PARTITION BY 컬럼명 ORDER BY 컬럼명 DESC)
+
+2. 데이터모델링, 데이터 프로젝트
+개체, 속성, 관계 정의
+테이블 정보 작성 (키, NULL유무, 데이터타입, 컬럼명, 기본키, 유니크 등) WITH 엑셀
+ER다이어그램  WITH Erwin, MySQL Workbench
+
