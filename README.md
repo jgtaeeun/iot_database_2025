@@ -982,7 +982,7 @@
             - sql_mode
             ```sql
 
-            SELECT @@sql_mode;
+            SELECT @sql_mode;
             -- GROUP BY 때 SELECT * 하면 경고창 뜨기 위한 코드
             SET SESSION sql_mode = 'ONLY_FULL_GROUP_BY';   
 
@@ -1069,6 +1069,75 @@
 
 ## 25일차 : 3월 10일
          
-- Python GUI로 DB연동 앱 개발
+- tkinter GUI로 DB연동 앱 개발
+    1. MySQL madang데이터베이스 사용하는 madang 사용자 생성 , 권한 [SQL](./day23/da03_로그인_사용자생성및권한부여.sql)
+    2. madang  DB에 students 테이블 생성 [SQL](./day25/da01_테이블생성.sql)
+    3. tkinter 탬플릿코드 작성 - 기본적인 GUI앱 틀 
+   
+    ```python
+    # 윈도우 root의 레이블의 아이콘 변경
+    root.iconphoto(True, tk.PhotoImage(file='./images/school.png'))
+    ##  ICONBITMAP: 비트맵 이미지를 기반으로 아이콘을 표현하며, 주로 BMP 형식에 사용됩니다. (예: ICO).
+    ## ICONPHOTO: 사진 형식의 이미지를 기반으로 아이콘을 표현하며, 다양한 이미지 형식을 지원합니다 (예: PNG, JPEG).
+    
+    # 트리뷰 설정
+    cols = ('학생번호','학생명','핸드폰','입학년도')
+    dataView = ttk.Treeview(root, columns=cols, show='headings', height=14)
 
+    for col in cols :
+        dataView.heading(col, text=col)                
+        dataView.grid(row=1, column=0, columnspan=2)    
+        dataView.place(x=10, y=180)
+
+    # grid()는 위젯을 grid 레이아웃에 배치하는 메서드입니다. row=1은 이 위젯이 두 번째 행에 배치되도록 지정하고, column=0은 첫 번째 열에 배치되도록 지정합니다. columnspan=2는 두 개의 열을 걸쳐서 배치된다는 의미입니다. 이 코드는 Treeview 위젯이 그리드 레이아웃에서 두 번째 행에 배치되도록 합니다. 
+
+    ```
+     <img src='./images/students_tkinter.png' width = 700>
+
+    4. 데이터베이스 CRUD 함수 구현 [Python](./day25/students_regapp.py)
+        - SELECT 기능 구현
+        ```python
+        # db연결 (커넥션 객체 생성->커서-> 쿼리실행->커서로 데이터 패치-> 커서종료->커넥션 종료)
+
+        # 가져온 데이터 treeview에 추가
+        ## 트리뷰에 있는 모든 행을 삭제하여 트리뷰를 초기화합니다.
+        dataView.delete(*dataView.get_children())   
+
+        ## mysql같은 데이터베이스에서는 인덱스 1부터 시작하기에 enumerate의 start =1 이다.
+        for i , (std_id, std_name, std_mobile, std_regyear) in enumerate(data, start=1):    
+        dataView.insert('','end',values=(std_id, std_name, std_mobile, std_regyear))   
+        ##첫 번째 인수인 ''은 부모 항목을 지정하는 부분입니다. 여기서는 루트 항목을 의미하며, 모든 항목을 최상위로 추가하려면 빈 문자열을 사용합니다.
+        ##'end'는 새 항목을 트리뷰의 마지막에 추가하라는 의미입니다.
+        ```
+        - insert 기능 구현
+        - update 기능 구현
+        - delete 기능 구현
+
+        - 위젯에 선택한 행 보여주기
+        ```python
+        dataView.bind('<Double-Button-1>', func=getData)
+
+        ent1.delete(0, END)
+        ent2.delete(0, END)
+        ent3.delete(0, END)
+        ent4.delete(0, END)
+
+        ## 트리뷰 선택항목 ID 가져오기
+        sel_item = dataView.selection()
+
+        ## 선택한 항목의 모든 값 가져오기
+        if sel_item :
+            item_values = dataView.item(sel_item, 'values') 
+        
+        ## 엔트리 위젯에 가져온 값 각각 넣기  (1, '정해성', '010-9999-8888', 2020)
+        ent1.insert(0, item_values[0])
+        ent2.insert(0, item_values[1])
+        ent3.insert(0, item_values[2])
+        ent4.insert(0, item_values[3])
+
+        ```
+        <img src='./images/tkinter_db연동_insert.png' width =500>
+        <img src='./images/tkinter_db연동_select.png' width =500>
+- 데이터베이스 연습
+    - 모델링 연습
 - 코딩테스트
